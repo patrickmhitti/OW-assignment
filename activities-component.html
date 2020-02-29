@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Multiple Components</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <link rel="stylesheet" type="text/css" href="">
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.0.5/vue.min.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+    <div id="app" class="container-fluid">
+        <div class="jumbotron">
+            <h1>Metro Stations Activity</h1>
+        </div>
+        <div class="container-fluid">
+            <activities-component></activities-component>
+        </div>
+    </div>
+
+
+    <template id="activities-template">
+        <div class="shadow p-4 mb-4 bg-white">
+            <div class="row">
+                <div class="col-8">
+                    <div class="row">
+                        <div class="col-12 text-nowrap">
+                            <h3><i class="fa fa-check-circle"></i>&nbsp;Select Line and Station</h3><span  class="small">
+                        </div>
+                   
+                        <div class="col-6">
+                            <select id="cmbLines" class="form-control mdb-select md-form" v-on:change=onSelectLine($event) v-model="key" min-width="200px !impotant">
+                                <option value="" disabled selected>Please select a Line</option>
+                                <option v-for="line in lines" v-bind:value=line.id v-text=line.name></option>
+                            </select>
+                        </div>
+                            <div class="col-6">
+                            <select id="cmbStations" class="form-control mdb-select md-form" v-on:change=onSelectStation($event)>
+                                <option value="" disabled selected>Please select a Station</option>
+                                <option v-for="sp in stopPoints" v-bind:value=sp.id v-text=sp.commonName></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row p-4 mb-4">
+                        <div class="col-12 shadow p-4 mb-2 bg-white">
+                            <h3>Next 3 trains</h3>
+                            <ul class="list-group">
+                                <li class="list-group-item" v-for="(ss, index) in shortSchedule" v-if="index < 3">
+                                    <h4><i class="fa fa-sign-in text-success" v-if="ss.direction=='inbound'"></i><i v-if="ss.direction=='outbound'" class="fa fa-sign-out text-primary"></i>&nbsp;{{ ss.destinationName }}</h4>
+                                    <h6>{{formatDate(ss.expectedArrival)}}</h6>
+                                </li>
+                                <span class="small" v-if="shortSchedule == null">No information available!</span>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 col-sm-12">
+                            <div class="table-responsive-sm">
+                                <h4><i class="fa fa-sign-out text-primary"></i>&nbsp;Outbound</h4>
+                                <table class="table">
+                                    <tr>
+                                        <th>Destination</th>
+                                        <th>Expected Arrival</th>
+                                        <th>Current Location</th>
+                                        <th>Time to Station</th>
+                                    </tr>
+                                    <tr v-for="ss in this.longScheduleOutbound">
+                                        <td>{{ ss.destinationName }}</td>
+                                        <td>{{ formatDate(ss.expectedArrival) }}</td>
+                                        <td>{{ ss.currentLocation }}</td>
+                                        <td>{{ ss.timeToStation }}</td>
+                                    </tr>
+                                    <tr v-if="this.longScheduleOutbound == null">
+                                        <td colspan="4">No information available!</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-6 col-sm-12">
+                            <div class="table-responsive-sm">
+                                <h4><i class="fa fa-sign-in text-success"></i>&nbsp;Inbound</h4>
+                                <table class="table">
+                                    <tr>
+                                        <th>Destination</th>
+                                        <th>Expected Arrival</th>
+                                        <th>Current Location</th>
+                                        <th>Time to Station</th>
+                                    </tr>
+                                    <tr v-for="ss in this.longScheduleInbound">
+                                        <td>{{ ss.destinationName }}</td>
+                                        <td>{{ formatDate(ss.expectedArrival) }}</td>
+                                        <td>{{ ss.currentLocation }}</td>
+                                        <td>{{ ss.timeToStation }}</td>
+                                    </tr>
+                                    <tr v-if="this.longScheduleInbound == null">
+                                        <td colspan="4">No information available!</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <h3 class="shadow p-4 mb-4 bg-white" v-if="linesDisruptions != null">Disruptions</h3>
+                    <ul class="list-group">
+                        <li class="list-group-item" v-for="ss in linesDisruptions">
+                            <span class="font-weight-bold"><i class="fa fa-exclamation-circle text-danger" aria-hidden="true"></i>&nbsp;{{ ss.description }}</span>
+                            <br/>
+                            <span>{{ formatDate(ss.lastUpdate) }}</span>
+                        </li>
+                        <li class="list-group-item" v-if="linesDisruptions == null">
+                            <span>No data available!</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+        </div>
+        
+        </div>
+    </template>
+
+    <script src="activities-component.js"></script>
+</body>
+
+</html>
