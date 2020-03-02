@@ -18,21 +18,31 @@
 </head>
 
 <body>
-    <div id="app" class="container-fluid">
+   
+    <div class="container-fluid">
         <div class="jumbotron">
             <h1>Metro Stations Activity</h1>
         </div>
-        <div class="container-fluid">
-            <activities-component></activities-component>
-        </div>
+        <div class="row">
+            <div class="col-8">
+               
+                    <div id="app" >
+                        
+                        <div class="container-fluid">
+                            <activities-component></activities-component>
+                        </div>
+                    </div>
+            </div>
+            <div class="col-4">
+    <div id="dis">
+        <disruptions-component></disruptions-component>
     </div>
-
+</div>
+</div>
 
     <template id="activities-template">
         <div class="shadow p-4 mb-4 bg-white">
             <div class="row">
-                <div class="col-8">
-                    <div class="row">
                         <div class="col-12 text-nowrap">
                             <h3><i class="fa fa-check-circle"></i>&nbsp;Select Line and Station</h3><span  class="small">
                         </div>
@@ -109,24 +119,22 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-4">
-                    <h3 class="shadow p-4 mb-4 bg-white" v-if="linesDisruptions != null">Disruptions</h3>
-                    <ul class="list-group">
-                        <li class="list-group-item" v-for="ss in linesDisruptions">
-                            <span class="font-weight-bold"><i class="fa fa-exclamation-circle text-danger" aria-hidden="true"></i>&nbsp;{{ ss.description }}</span>
-                            <br/>
-                            <span>{{ formatDate(ss.lastUpdate) }}</span>
-                        </li>
-                        <li class="list-group-item" v-if="linesDisruptions == null">
-                            <span>No data available!</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            
-        </div>
-        
-        </div>
+              
+    </template>
+    <template id="disruptions-template">
+        <div class="shadow p-4 mb-4 bg-white">
+        <h3 v-if="linesDisruptions != null">Disruptions</h3>
+        <ul class="list-group">
+            <li class="list-group-item" v-for="ss in linesDisruptions">
+                <span class="font-weight-bold"><i class="fa fa-exclamation-circle text-danger" aria-hidden="true"></i>&nbsp;{{ ss.description }}</span>
+                <br/>
+                <span>{{ formatDate(ss.lastUpdate) }}</span>
+            </li>
+            <li class="list-group-item" v-if="linesDisruptions == null">
+                <span>No data available or still fetching disruptions!</span>
+            </li>
+        </ul>
+    </div>
     </template>
 
     <script src="activities-component.js"></script>

@@ -1,4 +1,8 @@
-
+var formatDate = function (value){
+  if (value) {
+    return moment(String(value)).format('MM/DD/YYYY hh:mm:ss')
+  }
+};
 
 var activities = Vue.extend({
     data () {
@@ -11,7 +15,6 @@ var activities = Vue.extend({
           key: '',
           selectedStation: null,
           timer: null,
-          linesDisruptions: null,
           lastUpdateDate: null,
           selectedLine: null
         }
@@ -19,11 +22,7 @@ var activities = Vue.extend({
     template: '#activities-template',
   
     methods: {
-        formatDate(value) {
-            if (value) {
-              return moment(String(value)).format('MM/DD/YYYY hh:mm:ss')
-            }
-          },
+        
         compare(a, b) {
             if (a.expectedArrival - b.expectedArrival) return 1;
             if (b.expectedArrival > a.expectedArrival) return -1;
@@ -48,7 +47,6 @@ var activities = Vue.extend({
             clearTimeout(this.timer); 
             this.timer = setInterval(this.onSelectStation, 6000)
             this.selectedLine = document.getElementById("cmbLines").value;
-            console.log(this.selectedLine);
             axios
             .get('https://api.tfl.gov.uk/Line/' + this.selectedLine + '/Arrivals/' + event.target.value)// + '?direction=inbound')
             .then(response => {
@@ -60,20 +58,14 @@ var activities = Vue.extend({
                 this.longScheduleOutbound = response.data.sort(this.compare);
                 this.longScheduleOutbound = this.longScheduleOutbound.slice().filter(a => a.direction == 'outbound');   
                 this.lastUpdateDate = new Date();
-                console.log('Refresh completed at: ' + this.formatDate(this.lastUpdateDate))
+                console.log('Refresh completed at: ' + formatDate(this.lastUpdateDate))
             }); 
         }
       },
       mounted () { 
         axios
           .get('https://api.tfl.gov.uk/Line/Mode/tube')
-          .then(response => (this.lines = response.data));
-
-          axios
-            .get('https://api.tfl.gov.uk/Line/Mode/tube/Disruption') //https://api.tfl.gov.uk/Line/Mode/tube%2C%20bus/Disruption
-            .then(response => {
-                this.linesDisruptions = response.data.sort(this.compare);  
-            })
+          .then(response => this.lines = response.data);
       }
 });
 Vue.component('activities-component', activities);
@@ -86,4 +78,32 @@ new Vue({
             completed: false
         }]
     }
+});
+
+var disruptions = Vue.extend({
+  data () {
+      return {
+        linesDisruptions: null
+      }
+    },
+  template: "#disruptions-template",
+ 
+  mounted () { 
+      axios
+        .get('https://api.tfl.gov.uk/Line/Mode/tube%2C%20bus/Disruption') //https://api.tfl.gov.uk/Line/Mode/tube%2C%20bus/Disruption
+        .then(response => {this.linesDisruptions = response.data; console.log(this.linesDisruptions);})
+    }
+});
+
+Vue.component('disruptions-component', disruptions);
+
+new Vue({
+    el: '#dis',
+    data: {
+      todos: [{
+          title: 'Todo 1',
+          completed: false
+      }]
+  }
+    
 });
