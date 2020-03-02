@@ -45,7 +45,7 @@ var activities = Vue.extend({
                 selectedStation = event;
             }
             clearTimeout(this.timer); 
-            this.timer = setInterval(this.onSelectStation, 60000)
+            this.timer = setInterval(this.onSelectStation, 10000)
             this.selectedLine = document.getElementById("cmbLines").value;
             axios
             .get('https://api.tfl.gov.uk/Line/' + this.selectedLine + '/Arrivals/' + event.target.value)// + '?direction=inbound')
@@ -86,7 +86,7 @@ var disruptions = Vue.extend({
   mounted () { 
       axios
         .get('https://api.tfl.gov.uk/Line/Mode/tube/Disruption') //https://api.tfl.gov.uk/Line/Mode/tube%2C%20bus/Disruption
-        .then(response => this.linesDisruptions = response.data)
+        .then(response => {this.linesDisruptions = response.data; console.log(this.linesDisruptions);})
     }
 });
 

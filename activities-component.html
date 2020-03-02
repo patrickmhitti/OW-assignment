@@ -131,6 +131,7 @@
                         <br />
                         <span>{{ formatDate(ss.lastUpdate) }}</span>
                     </li>
+                        <span class="small" v-if="linesDisruptions == null || linesDisruptions.length == 0">No current disruptions.</span>
                 </ul>
             </div>
         </template>
