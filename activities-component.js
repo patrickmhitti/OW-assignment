@@ -58,6 +58,7 @@ var activities = Vue.extend({
                 this.longScheduleOutbound = response.data.sort(this.compare);
                 this.longScheduleOutbound = this.longScheduleOutbound.slice().filter(a => a.direction == 'outbound');   
                 this.lastUpdateDate = new Date();
+                console.clear();
                 console.log('Refresh completed at: ' + formatDate(this.lastUpdateDate))
             }); 
         }
@@ -71,13 +72,7 @@ var activities = Vue.extend({
 Vue.component('activities-component', activities);
 
 new Vue({
-    el: '#app',
-    data: {
-        todos: [{
-            title: 'Todo 1',
-            completed: false
-        }]
-    }
+    el: '#app'
 });
 
 var disruptions = Vue.extend({
@@ -98,12 +93,5 @@ var disruptions = Vue.extend({
 Vue.component('disruptions-component', disruptions);
 
 new Vue({
-    el: '#dis',
-    data: {
-      todos: [{
-          title: 'Todo 1',
-          completed: false
-      }]
-  }
-    
+    el: '#dis'    
 });
